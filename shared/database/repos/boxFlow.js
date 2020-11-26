@@ -7,9 +7,11 @@ module.exports.saveBoxFlow = (boxFlow) => {
   });
 };
 
-module.exports.getByCategories = () => {
+module.exports.getByCategories = (since) => {
+  const match =  { phoneNumber: "whatsapp:+573022939843" }
+  if(since) match.createdAt = { $gte: since } 
   return boxFlowSchema.aggregate([
-    { $match: { phoneNumber: "whatsapp:+573022939843" } },
+    { $match: match },
     {
         $group: {
             _id: {$toLower: '$category'},
@@ -26,6 +28,30 @@ module.exports.getByCategories = () => {
   ]);
 };
 
+module.exports.getByMonth = () => {
+  return boxFlowSchema.aggregate([
+    { $match: { phoneNumber: "whatsapp:+573022939843" } },
+    {
+      $group: {
+        _id: { $substr: ["$createdDate", 0, 7] },
+        total: { $sum: "$amount" },
+      },
+    },
+    {
+      $project: {
+        total: "$total",
+        month: "$_id",
+        _id: false,
+      },
+    }
+  ]);
+};
+module.exports.getAllSince = (since)=>{
+  if(!since) throw 'Since is mandatory'
+  return boxFlowSchema.find({
+    createdAt: { $gte: since }
+  }).sort({createdAt: -1})
+}
 module.exports.getByMonth = () => {
   return boxFlowSchema.aggregate([
     { $match: { phoneNumber: "whatsapp:+573022939843" } },

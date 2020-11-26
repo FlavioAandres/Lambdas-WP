@@ -13,13 +13,16 @@ module.exports.create = async (prePayment = []) => {
   }
 };
 
-module.exports.getActive = async () => {
+module.exports.getActive = async (since) => {
+  const match = {
+    isAccepted: {$in: [false, null]},
+    isHidden: { $in: [undefined, false] },
+  }
+  if(since) match.createdAt = { $gte: since } 
+
   try {
     await connect();
-    const result = await prePaymentsSchema.find({
-      isAccepted: {$in: [false, null]},
-      isHidden: { $in: [undefined, false] },
-    });
+    const result = await prePaymentsSchema.find(match);
     await destroy();
     return result.reverse();
   } catch (e) {

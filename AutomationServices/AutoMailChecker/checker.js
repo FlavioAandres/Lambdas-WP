@@ -7,7 +7,7 @@ const { create: createNewPrePay } = require('../../shared/database/repos/prePaym
 const configs = require('./configs')
 const {
     SUBJECT_SEARCHED,
-    MINUTES_AGO_SEARCH = '10080'
+    MINUTES_AGO_SEARCH = '21600'
 } = process.env
 
 const start = async (event, context) =>{
