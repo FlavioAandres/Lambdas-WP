@@ -157,6 +157,26 @@ functions:
       EMAIL_USERNAME: ${file(./config/${opt:stage}.json):EMAIL_USERNAME}
       EMAIL_PASSWORD: ${file(./config/${opt:stage}.json):EMAIL_PASSWORD}
 
+  PaymentsAnalizer:
+    handler: AutomationServices/AnalizerTask/analizer.start
+    name: AutomationServices-AnalizerTasks-${opt:stage}
+    events:
+      - schedule:
+          description: "Runs every month"
+          rate: cron(0 0 1 * *) # First day of the month
+          enabled: true
+          input: 
+            ExecutionType: "MONTHLY"
+      - schedule:
+          description: "Runs every sunday"
+          rate: cron(0 0 * * 6) # First day of the month
+          enabled: true
+          input:
+            ExecutionType: "WEEKLY"
+    environment:
+      EMAIL_USERNAME: ${file(./config/${opt:stage}.json):EMAIL_USERNAME}
+      EMAIL_PASSWORD: ${file(./config/${opt:stage}.json):EMAIL_PASSWORD}
+
   DataCreditoScraper:
     handler: AutomationServices/DataCreditoScraper/scraper.start
     name: AutomationServices-DataCreditoScraper-${opt:stage}
